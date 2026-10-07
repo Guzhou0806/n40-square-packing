@@ -1,0 +1,22 @@
+name: 完整验证 / Full verification
+on:
+  push:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  full:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - name: 工具链 / Toolchain
+        run: rustup toolchain install 1.98.0 --profile minimal
+      - name: 固定依赖 / Pinned dependencies
+        run: python3 -B verifier/prepare.py --runtime "$RUNNER_TEMP/n40-replay"
+      - name: 完整复验 / Complete replay
+        env:
+          RUSTUP_TOOLCHAIN: 1.98.0
+        run: python3 -B verifier/run.py --runtime "$RUNNER_TEMP/n40-replay" --workers 4

@@ -1,0 +1,127 @@
+{
+  "status": "FULL_REPLAY_PASSED",
+  "claim": "s(40) > 33509/5000",
+  "chi": "323821199088501520871226906971672056357433909269798713813853391825993321965373971018222018136970408763233486445733/323882463628959229832526296814768868153907705430290488802750777701020428781298116178574987576000000000000000000000",
+  "simple_charge": "99981/100000",
+  "gap": "3/1250",
+  "nodes": 201,
+  "intervals": 200,
+  "active": 65,
+  "independence_grade": "CODE_DISTINCT_FULL",
+  "candidate_sha256": "71011d0356dd179c6e7e6e02c9a064ff30f6f13844016ce3b97463bf7ef53dc0",
+  "run_id": "3f293cedd0f547e08f8fbfdf3e39c40a",
+  "code_and_input_sha256": {
+    "verifier/caps.py": "603d5288cfeefaf72e9ce6bdf3f262e4efad221577eeaa87f32cd3881d1236d8",
+    "verifier/prepare.py": "a460713e04799b085c4df37eb4baa41dc10dc71904128f456212b5ec63f92669",
+    "verifier/run.py": "e208f2e7fd05916f9b2f6d2251656ce324d78a80dfcd81b323a3bea00c79da74",
+    "verifier/sqverify_fast/Cargo.lock": "5c3206fa1eeabb23d52e93d76eec0d2c16820e6065ce02e8e13a7fa47693785c",
+    "verifier/sqverify_fast/Cargo.toml": "df5e6c24699f934dcabe1119273621ac332dfcd9c75dd0650acacfc827466665",
+    "verifier/sqverify_fast/build.rs": "1e238378117bc7716e50cdd4e3d0d3862e756e1ff863794b9b559ffe4b2743e6",
+    "verifier/sqverify_fast/rust-toolchain.toml": "495c69d1db93f25f53e3d0d2d40d812313366cc368de317871c2ace6c6ffafa4",
+    "verifier/sqverify_fast/src/axis.rs": "bf18bd9a0a82806bac6a3aa82df73349944eaa56a22ae5a9b67a67ab3d237e97",
+    "verifier/sqverify_fast/src/certificate.rs": "4bf5c5dc1e74dd97040360befbbb2b3e07438b4b3b11d7aa340bc2e20e2ea7d4",
+    "verifier/sqverify_fast/src/exact.rs": "b9d627b740c8a0c7ed069c1faac2563b9db72c03c10c9f88fb3c0234054f481a",
+    "verifier/sqverify_fast/src/interval.rs": "287da6570dfc1278e3ba6b4c09bfaca6409d16fba0713329bf0c4a5dcbfe5e56",
+    "verifier/sqverify_fast/src/lib.rs": "8a8f96380144511afc84734e667d1114bd2c1400623482d50d40eb394646aceb",
+    "verifier/sqverify_fast/src/main.rs": "e4a65d9570a5f91f41474a20c3c90e8804da568c11d32ca632da59605f5f84e8",
+    "verifier/sqverify_fast/src/oracle.rs": "3c993d66c6edb3a235a3e089a586bb4b42de02fb331fc519836b22cadb99c151",
+    "verifier/sqverify_fast/src/rotated.rs": "4bf878c4d0e8acaedcccedbfb52d8885e1ba2657876bad2048fe30e5f3c7ded3",
+    "verifier/sqverify_fast/src/rotated_tests.rs": "02472f4c41ab738bc029d7e88b66cdf3382bc1e5a74aa6a72f81573b292eec86",
+    "verifier/sqverify_fast/tests/adversarial.rs": "63039dc311fea68837399d0b428ff5d048ef27f392e87f91d11acaf3d393e3b0",
+    "verifier/sqverify_fast/tests/declared_net.rs": "556722cf73046d10d8e81b249b5a868440dbd924dbf2e5d2515e81384eb80e49",
+    "verifier/validate.py": "fe2ed0bc14b155148e4b5c4d489b2d689ecaed59c31515acc9f90c638cb3f26c",
+    "tests/controls.py": "668393ee569c648de6b83231156104c12ca5029c17509240ddd3bd26e32e615c",
+    "certificate/certified_candidate.json": "71011d0356dd179c6e7e6e02c9a064ff30f6f13844016ce3b97463bf7ef53dc0",
+    "certificate/parameters.json": "49ffe47ac52cdcec4cc627c0faef3946e19704b892f6560eb7111ce9a0041b3d"
+  },
+  "binary_sha256": "ab01dc717e96010502c68347983b1871f7c3d5db8aaa1c1c8d922bb7c812b126",
+  "controls": {
+    "status": "CONTROLS_PASSED",
+    "controls": [
+      {
+        "case": "missing_direction",
+        "refused": true,
+        "reason": "EXACT_NODE_SET"
+      },
+      {
+        "case": "duplicate_direction",
+        "refused": true,
+        "reason": "EXACT_NODE_SET"
+      },
+      {
+        "case": "missing_enhanced_node",
+        "refused": true,
+        "reason": "NODE_THRESHOLD"
+      },
+      {
+        "case": "wrong_multiplicity",
+        "refused": true,
+        "reason": "CAP_MULTIPLICITY"
+      },
+      {
+        "case": "floatified_exact_constant",
+        "refused": true,
+        "reason": "STALE_TARGET_PARAMETERS"
+      },
+      {
+        "case": "missing_triangle",
+        "refused": true,
+        "reason": "CAP_MULTIPLICITY"
+      },
+      {
+        "case": "reduced_G",
+        "refused": true,
+        "reason": "ENVELOPE_ARITHMETIC"
+      },
+      {
+        "case": "changed_target_stale_parameters",
+        "refused": true,
+        "reason": "STALE_TARGET_PARAMETERS"
+      },
+      {
+        "case": "stale_receipt",
+        "refused": true,
+        "reason": "STALE_RECEIPT"
+      },
+      {
+        "case": "incomplete_domain",
+        "refused": true,
+        "reason": "NODE_SCOPE"
+      },
+      {
+        "case": "disabled_assertions_run.py",
+        "refused": true,
+        "exit_code": 1
+      },
+      {
+        "case": "disabled_assertions_caps.py",
+        "refused": true,
+        "exit_code": 1
+      },
+      {
+        "case": "disabled_assertions_validate.py",
+        "refused": true,
+        "exit_code": 1
+      },
+      {
+        "case": "integer_overflow_avoided",
+        "passed": true,
+        "weight_bits": 201
+      }
+    ],
+    "event_controls": {
+      "event_cases": 83,
+      "permutation_replays": 83,
+      "boundary_contact_allowed": true
+    }
+  },
+  "compiler": "rustc 1.98.0 (88d9e12ae 2026-08-18)",
+  "python": "3.14.4",
+  "completed_utc": "2026-10-07T18:49:22.535889+00:00",
+  "original_full_runner": "FAILED_OR_INCOMPLETE",
+  "formal_proof": false,
+  "peer_reviewed": false,
+  "artifact_kind": "MINIMIZED_PUBLIC_RESULT",
+  "network_during_replay": "DISABLED_BY_LINUX_NETWORK_NAMESPACE",
+  "raw_result_sha256": "acd5441527201c3780e67a56a5d2dda2668e8d06674aaa08f97a90fc06ce1e81"
+}

@@ -1,23 +1,23 @@
-# ZH: 验证范围与限制
-# EN: Verification scope and limitations
+# ZH: 验证范围与证据
+# EN: Verification scope and evidence
 
-ZH: 来源实现 full-mixed 的 49 个阶段已完整执行并退出 0，包括全水平域、200 个非水平节点、42 个增强节点、新削角包络和组合。历史原始 201 方向 runner 的水平任务曾终止，其整体仍为 FAILED/INCOMPLETE；不把 full-mixed 称为该原始 runner 的完整成功。
-EN: All 49 producer full-mixed stages executed and exited 0, covering the full axis domain, 200 nonaxis nodes, 42 enhanced nodes, fresh cap envelopes and composition. The historical original 201-direction runner had its axis task terminated and remains FAILED/INCOMPLETE as a whole; full-mixed is not represented as a complete success of that original runner.
+ZH: 命题为 s(40)>335427/50000。完整验证包含源密度身份、全部 401 个连续中心域、全局密度上界、连续角度转移和严格计数端点，不只检查显示小数。
+EN: The claim is s(40)>335427/50000. Complete verification covers source-density identity, all 401 continuous center domains, a global density bound, continuous-angle transfer and the strict counting endpoint, not merely displayed decimals.
 
-ZH: 第二节点路线固定 sqverify_fast commit ef79288a498b5469e6b944f7b150d83aeeab5f94，使用凹截线梯形积分与区间导数，五组阈值均完整执行。新的有理数削角程序自行解析密度、半平面裁剪、生成 16 块支持域并计算全部 65 个全局上界；不导入来源几何或组合函数。
-EN: The second nodal route pins sqverify_fast commit ef79288a498b5469e6b944f7b150d83aeeab5f94, using concave-section trapezoids and interval derivatives, and executes all five threshold groups. The new rational cap program parses the density, clips half-planes, constructs 16-piece supports and computes all 65 global bounds itself, without importing producer geometry or composition functions.
+ZH: results/verification.json 中 PENDING_INDEPENDENT_REPLAY 表示尚无对应完整运行记录；CODE_DISTINCT_FULL 只有在新构建、全量节点、双算法有限界与拒证测试都成功后产生。results/nodes.jsonl 保留每个节点的结果，输入和代码身份绑定至该次运行。
+EN: PENDING_INDEPENDENT_REPLAY in results/verification.json means a corresponding complete execution record is absent. CODE_DISTINCT_FULL is produced only after a fresh build, every node, dual-algorithm finite bounds and refusal tests succeed. results/nodes.jsonl retains each node's result, with input and code identities bound to that execution.
 
-ZH: 独立代码审查重建了全部 200 分类与 65 条收费，并用另一种差分前缀扫描重算 r=1、64 的最大值；其余 63 个最大值依据已审代码的完整运行。审查未发现固定实例的数学反例。共享前提包括密度、D4 对称、角网格、连续中心二分、导数界与端点削角引理，故使用 CODE_DISTINCT_FULL。
-EN: Independent code review rebuilt all 200 classifications and 65 charges, and separately recomputed maxima for r=1 and 64 by difference-prefix scans; the other 63 maxima rely on complete execution of reviewed code. No mathematical counterexample was found for the fixed instance. Shared premises include the density, D4 symmetry, angular net, continuous-centre subdivision, derivative bounds and endpoint-cap lemma, so the grade is CODE_DISTINCT_FULL.
+ZH: 原研究的非轴覆盖使用 Tokoharu 的 C++ 内核；公开完整复验使用 Joshua Levy 项目的独立 Rust 实现。两者共享矩形测度、角网覆盖、平移截面导数与中心盒分支定界等数学结构，因此属于代码不同而非完整数学方法不同。
+EN: The research non-axis coverage uses Tokoharu's C++ kernel; the public complete replay uses the independently implemented Rust verifier from Joshua Levy's project. They share the rectangle measure, angular covering, translated-section derivatives and center-box branch and bound, so the distinction is in code, not wholly different mathematical methods.
 
-ZH: sqverify_fast 的独立性记录披露其作者阅读过相关证明评审、回执和性能信息；本项目没有核实完全隔离的历史开发过程，也不使用 METHOD_DISTINCT_FULL 标签。详见来源记录链接。
-EN: sqverify_fast's independence record discloses reading related proof reviews, receipts and performance information. This project has not established a fully isolated historical development process and does not use METHOD_DISTINCT_FULL. See the linked source record.
+ZH: 401 节点由固定原密度生成新的精确输入声明，不修改 Rust 内核。正权矩形、权重及八重对称质量保持不变；源 JSON 的 201 节点历史元数据不作为新网声明或新成功凭据。
+EN: A new exact input declaration generates 401 nodes from the fixed original density without modifying the Rust kernel. Positive rectangles, weights and eightfold symmetric mass remain unchanged; the source JSON's historical 201-node metadata is neither the new net declaration nor evidence of new success.
 
-ZH: 对抗测试覆盖缺失/重复方向、漏增强节点、错误重数、精确参数浮点化、漏小三角形、事件顺序、调小 G、目标变更复用参数、旧回执和断言关闭；整数扫描使用无界整数，并检查超过 128 位的测试权重。合法边界接触是必须通过的正控制。Rust 自带 38 个单元和对抗测试也在完整入口中运行。
-EN: Adversarial tests cover missing/duplicate directions, omitted enhanced nodes, wrong multiplicity, floatified exact parameters, missing subtriangles, event order, reduced G, changed targets with stale parameters, stale receipts and disabled assertions. The integer sweep uses unbounded integers and tests weights beyond 128 bits. Legal boundary contact is a required positive control. The full entry point also runs Rust's 38 unit and adversarial tests.
+ZH: 全局密度界分别以区间加法线段树和显式纵向前缀扫描计算，两次展开采用不同 D4 生成方式。坐标和计数使用精确有理数及无界整数；数值显示仅用于阅读。
+EN: The global density bound is computed by a range-add segment tree and an explicit vertical-prefix scan, with different D4 generation methods for the two expansions. Coordinates and counting use exact rationals and unbounded integers; numerical displays are for reading only.
 
-ZH: 公开目录自身的执行结果保存在 results/public-replay.json；该文件是最小化结果，不是原始日志。完整入口每次从真实输入重新计算。对应提交的 GitHub Actions 状态由 GitHub 实际运行记录给出，不能从本说明推断为通过。
-EN: The public directory's execution result is retained in results/public-replay.json, a minimized result rather than raw logs. Each full invocation recomputes from the actual input. Commit-matched GitHub Actions status is given by the actual GitHub run and cannot be inferred as passed from this document.
+ZH: 反向测试包含错误输入、改变参数、伪造峰值、缺失或重复节点、错误方向网、错误中心域、弱阈值、未决状态及故障注入。人工合成的测试节点仅用于测试拒证逻辑，不属于实际覆盖证据。
+EN: Negative tests include wrong inputs, changed parameters, false peaks, missing or duplicated nodes, a wrong net or center domain, weak thresholds, unresolved status and fault injection. Synthetic test nodes test refusal logic only and are not actual coverage evidence.
 
-ZH: 集成器中的 G 变更控制检验不一致数值会被拒绝；它不是另一个支持域扫描算法，也不保证拒绝人为协调伪造的全部字段。全量入口的证据来自同次新执行的削角扫描，而不是仅靠回执字段一致性。
-EN: The integrated G-mutation control checks rejection of inconsistent numbers; it is not another support-domain sweep and does not guarantee rejection of deliberately coordinated forgery of every field. Evidence in the full entry point comes from its fresh cap sweep, not receipt-field consistency alone.
+ZH: 哈希保证的是字节与记录之间的对应，而非数学真理。验证器源代码、所用几何引理、编译器及 IEEE binary64 行为仍属计算证明信任边界。本结果没有形式化证明助手认证，也不宣称人类专家同行评议。
+EN: Hashes establish correspondence between bytes and records, not mathematical truth. Verifier source, geometric lemmas, compilers and IEEE binary64 behavior remain within the computational-proof trust boundary. The result has no formal-assistant certification and claims no human expert peer review.

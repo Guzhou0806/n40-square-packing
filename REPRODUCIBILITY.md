@@ -1,40 +1,34 @@
 # ZH: 完整复验
 # EN: Complete reproduction
 
-ZH: 数学输入与验证源码随仓库提供。环境要求为 Linux、Python 3.11 或更高及 Rust 1.98.0；依赖版本和校验值由 Cargo.lock 固定。Windows 可使用 Linux 子系统。无需 NumPy、商业求解器或原研究目录。
-EN: Mathematical inputs and verifier sources are included. Requirements are Linux, Python 3.11 or later and Rust 1.98.0; Cargo.lock pins dependency versions and checksums. Windows can use a Linux subsystem. NumPy, commercial solvers and the original research directory are unnecessary.
+ZH: 所需环境为 x86_64 Linux、Python 3.10 或以上的标准库，以及支持 __int128 和 IEEE binary64 的 GCC C++17 编译器。Windows 可使用已有 WSL；无需 Rust、NumPy、求解器或联网获取数学输入。
+EN: Requirements are x86_64 Linux, the Python 3.10+ standard library and a GCC C++17 compiler supporting __int128 and IEEE binary64. Windows may use existing WSL; Rust, NumPy, solvers and network acquisition of mathematical inputs are unnecessary.
 
-ZH: 内容检查核对全部 SHA-256、双语文档配对、文件集合、精确密度和有限转移；它不是 401 个连续中心域的新运行。
-EN: Content checks cover every SHA-256, bilingual document pairing, the file set, exact density and finite transfer; they are not a fresh run over the 401 continuous center domains.
-
-```sh
-python3 -B verifier/release.py --check
-python3 -B -m unittest discover -s tests -p 'test_*.py' -v
-```
-
-ZH: 完整复验使用一个位于源码目录之外的新运行目录。首次准备工具链与固定依赖需要联网；prepare.py 按锁文件核对每个依赖归档的 SHA-256。其后的构建与数学验证使用离线模式。
-EN: Complete reproduction uses a fresh run directory outside the source tree. Initial toolchain and pinned-dependency preparation require networking; prepare.py checks every dependency archive's SHA-256 against the lockfile. Subsequent builds and mathematical verification run offline.
+ZH: 下列检查核对全部文件哈希、配对双语文档、精确输入与已有运行记录，不新执行连续姿态覆盖。
+EN: The following audit checks every file hash, paired bilingual documents, exact inputs and retained execution records, without freshly executing continuous-pose coverage.
 
 ```sh
-rustup toolchain install 1.98.0 --profile minimal
-RUNTIME=$(mktemp -d)
-python3 -B verifier/prepare.py --runtime "$RUNTIME"
-RUSTUP_TOOLCHAIN=1.98.0 python3 -B verifier/run.py --runtime "$RUNTIME" --workers 4
+python3 -B verifier/audit.py --check
 ```
 
-ZH: 执行包括 Python 拒证测试、Rust 单元与对抗测试、全新 release 构建、401 个节点的完整连续覆盖、两种全局密度扫描以及精确计数。缺失节点、错误角网、错误中心域、低阈值、注入故障或非零退出均使运行失败。
-EN: Execution includes Python refusal tests, Rust unit and adversarial tests, a fresh release build, complete continuous coverage at 401 nodes, two global-density sweeps and exact counting. Missing nodes, an incorrect net or center domain, a weak threshold, fault injection or a nonzero exit fail the run.
-
-ZH: 最终记录写入运行目录的 replay/verification.json，节点原始记录写入 replay/nodes/，汇总节点写入 replay/nodes.jsonl，各阶段标准输出、错误输出及退出码也保留。源码、输入和二进制身份分别记录，并检查执行前后源码未变。
-EN: The final record is written to replay/verification.json in the run directory, raw node records to replay/nodes/, and combined nodes to replay/nodes.jsonl; stage stdout, stderr and exit codes are also retained. Source, input and binary identities are recorded separately, and source immutability during execution is checked.
-
-ZH: 下列命令从已完成的运行生成最小公开归档，并再次核对归档中的执行身份、数学组合、文档和哈希。源码仓库不会被生成物覆盖。
-EN: The following command creates a minimal public archive from a completed run and rechecks its execution identities, mathematical composition, documents and hashes. Generated outputs do not overwrite the source repository.
+ZH: 完整运行要求此前不存在的外部目录；源码及原始证据不覆盖。下列命令重新构建和测试两个冻结内核，执行 43 个完整连续角带、完整轴向证明及精确计数，再生成已复跑归档。
+EN: A complete run requires a new external directory and does not overwrite source or original evidence. These commands rebuild and test both frozen kernels, execute 43 complete continuous slabs, the complete axis proof and exact counting, then produce a replayed archive.
 
 ```sh
-OUTPUT=$(mktemp -d)
-python3 -B verifier/release.py --package --runtime "$RUNTIME" --out "$OUTPUT"
+RUNROOT="$(mktemp -d)"
+python3 -B verifier/run.py --output "$RUNROOT/replay" --workers 4
+python3 -B verifier/audit.py --package --runtime "$RUNROOT/replay" --output "$RUNROOT/public"
 ```
 
-ZH: 自动化运行采用同一入口，不把仅有内容检查或历史成功标志当作完整复验。使用新的运行目录可保证没有继承旧构建产物；未经审查的编译包装器、额外 Rust 编译参数及 Python 优化模式被拒绝。
-EN: Automation uses the same entry point and does not treat content checks or historical success flags as a complete replay. A fresh run directory prevents inherited build outputs; unreviewed compiler wrappers, extra Rust flags and Python optimized mode are refused.
+ZH: 连续内核固定编译参数为 -O3 -std=c++17 -fno-fast-math -ffp-contract=off，纯整数轴向程序为 -O2 -std=c++17。不得使用 Python 优化模式、NDEBUG、fast-math、FMA contraction、FTZ/DAZ 或非最近舍入；危险环境模式受测试覆盖。
+EN: The continuous kernel uses -O3 -std=c++17 -fno-fast-math -ffp-contract=off, and the integer-only axis program uses -O2 -std=c++17. Python optimized mode, NDEBUG, fast-math, FMA contraction, FTZ/DAZ and non-nearest rounding are forbidden; unsafe environment modes are covered by tests.
+
+ZH: 两份大体积文本输入由原始密度重建并核对固定 SHA-256，不重复装入源码。verification.json、slabs.jsonl、axis.json 保留全部数学验收信息；逐带原始数值 stdout、参数、退出码及身份包括在 slabs.jsonl。
+EN: Both larger text inputs are regenerated from the original density and checked against fixed SHA-256 values rather than duplicated in the source. verification.json, slabs.jsonl and axis.json retain mathematical acceptance evidence; slabs.jsonl includes each slab’s original numerical stdout, arguments, exit status and identities.
+
+ZH: 额外构建日志和编译产物仅在运行目录保留。任何超时、未决盒、缺失角带、错误输入或不足下界都阻断通过；重复执行同一内核不提升独立性等级。
+EN: Additional build logs and binaries remain in the runtime directory only. Timeouts, unresolved boxes, missing slabs, wrong inputs or insufficient lower bounds prevent acceptance; reexecuting the same kernel does not raise its independence level.
+
+ZH: GitHub Actions 配置使用相同完整入口。只有成功完成的新运行才能生成正式归档；仅检查已有哈希不是全量验证。
+EN: The GitHub Actions configuration uses the same complete entry point. Only a successful fresh execution can generate the final archive; checking retained hashes is not full verification.
+

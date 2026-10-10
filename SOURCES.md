@@ -1,20 +1,24 @@
-# ZH: 来源、署名与许可
-# EN: Sources, credit and licensing
+# ZH: 来源、署名和许可
+# EN: Sources, credit and licenses
 
-ZH: 密度文件逐字节保留自 [wand125 的 rect_n40_L67](https://github.com/wand125/square-packing-bounds/tree/1a25a5ed745fdd905a52f48fcc48150a0669032d/certificates/rect_n40_L67)，固定提交为 1a25a5ed745fdd905a52f48fcc48150a0669032d，SHA-256 为 71011d0356dd179c6e7e6e02c9a064ff30f6f13844016ce3b97463bf7ef53dc0。历史状态字段不参与成功判定。
-EN: The density file is retained byte for byte from [wand125's rect_n40_L67](https://github.com/wand125/square-packing-bounds/tree/1a25a5ed745fdd905a52f48fcc48150a0669032d/certificates/rect_n40_L67), pinned at commit 1a25a5ed745fdd905a52f48fcc48150a0669032d, with SHA-256 71011d0356dd179c6e7e6e02c9a064ff30f6f13844016ce3b97463bf7ef53dc0. Historical status fields are not acceptance criteria.
+ZH: 原始密度为 [wand125 的 rect_n40_L67](https://github.com/wand125/square-packing-bounds/tree/1a25a5ed745fdd905a52f48fcc48150a0669032d/certificates/rect_n40_L67)，固定提交 1a25a5ed745fdd905a52f48fcc48150a0669032d。原始 JSON 保持逐字节不变，其 SHA-256 是 71011d0356dd179c6e7e6e02c9a064ff30f6f13844016ce3b97463bf7ef53dc0。
+EN: The original density is [wand125’s rect_n40_L67](https://github.com/wand125/square-packing-bounds/tree/1a25a5ed745fdd905a52f48fcc48150a0669032d/certificates/rect_n40_L67), pinned at 1a25a5ed745fdd905a52f48fcc48150a0669032d. The original JSON is unchanged byte for byte, with SHA-256 71011d0356dd179c6e7e6e02c9a064ff30f6f13844016ce3b97463bf7ef53dc0.
 
-ZH: 矩形密度与原验证方法的署名归于 wand125、[Tokoharu](https://github.com/tokoharu/square-packing-density-bounds) 及其引用的前人，包括 Stromquist、Burns 和 Massaccesi 等。既有密度、一般测度覆盖思路和原几何内核不作为本项目的原创内容。
-EN: Rectangle density and original verification methods are credited to wand125, [Tokoharu](https://github.com/tokoharu/square-packing-density-bounds) and their cited predecessors, including Stromquist, Burns and Massaccesi. The existing density, general measure-capture approach and original geometric kernel are not presented as original work of this project.
+ZH: 矩形密度方法及原始平移导数验证结构归 [Tokoharu](https://github.com/tokoharu/square-packing-density-bounds)；参考 verify.cpp 保存在上述固定证书目录中。测度及不可避免集合的前人工作包括 Stromquist、Burns 与 Massaccesi。
+EN: The rectangle-density method and original translation-derivative verification structure are credited to [Tokoharu](https://github.com/tokoharu/square-packing-density-bounds); the reference verify.cpp is retained in the pinned certificate directory above. Prior measure and unavoidable-set work includes Stromquist, Burns and Massaccesi.
 
-ZH: Rust 源码、测试、构建文件与锁文件保持 [Joshua Levy 的 squares 项目](https://github.com/jlevy/squares/tree/ef79288a498b5469e6b944f7b150d83aeeab5f94/packing/sqverify_fast) 固定版本的字节身份。其 [独立性声明](https://github.com/jlevy/squares/blob/ef79288a498b5469e6b944f7b150d83aeeab5f94/packing/sqverify_fast/INDEPENDENCE.md) 和 [可靠性证明](https://github.com/jlevy/squares/blob/ef79288a498b5469e6b944f7b150d83aeeab5f94/packing/sqverify_fast/SOUNDNESS.md) 界定了该实现的范围。
-EN: Rust sources, tests, build files and the lockfile retain their byte identity from the pinned revision of [Joshua Levy's squares project](https://github.com/jlevy/squares/tree/ef79288a498b5469e6b944f7b150d83aeeab5f94/packing/sqverify_fast). Its [independence statement](https://github.com/jlevy/squares/blob/ef79288a498b5469e6b944f7b150d83aeeab5f94/packing/sqverify_fast/INDEPENDENCE.md) and [soundness proof](https://github.com/jlevy/squares/blob/ef79288a498b5469e6b944f7b150d83aeeab5f94/packing/sqverify_fast/SOUNDNESS.md) define the implementation's scope.
+ZH: 凹截面下界受到 [Joshua Levy 的 Squares Project](https://github.com/jlevy/squares/tree/ef79288a498b5469e6b944f7b150d83aeeab5f94/packing/sqverify_fast) 的 Rust 实现启发，参考固定提交为 ef79288a498b5469e6b944f7b150d83aeeab5f94。本次新 C++ 内核不是该 Rust 程序的原样复跑。
+EN: The concave-section bound is informed by the Rust implementation in [Joshua Levy’s Squares Project](https://github.com/jlevy/squares/tree/ef79288a498b5469e6b944f7b150d83aeeab5f94/packing/sqverify_fast), pinned at ef79288a498b5469e6b944f7b150d83aeeab5f94. The new C++ kernel is not an unchanged replay of that Rust program.
 
-ZH: Guzhou0806 的 AI 辅助研究贡献为加密角网验证、严格内核转移及统一削角积分组合，由此得到 6.70854。公开有限检查与执行程序针对该结果重新组织；代码不同的复验仍共享明确列出的数学引理，不等同同行评议。
-EN: Guzhou0806's AI-assisted research contributes finer-net verification, strict core transfer and the uniform clipped-corner integral composition giving 6.70854. Public finite checks and execution programs are organized for this result; code-distinct replay still shares the listed mathematical lemmas and is not peer review.
+ZH: 连续姿态扩展、较小方块覆盖、近水平补丁、精确组合以及相应实现与测试归 Guzhou0806 的 AI 辅助研究。原密度没有重新优化，既有方法和原始验证器不冒称为本项目原创。
+EN: The continuous-pose extension, smaller-square coverage, near-axis patch, exact composition and associated implementation/testing are credited to Guzhou0806’s AI-assisted research. The original density is not reoptimized, and prior methods and original verifiers are not claimed as original work here.
 
-ZH: 新增材料按根目录 MIT 许可提供。密度原许可保留在 licenses/wand125.txt；Rust 项目原许可保留在 licenses/jlevy-squares.txt，其中代码适用 MIT，其他项目材料适用 CC BY 4.0。未复制第三方论文存档。
-EN: New material is provided under the root MIT license. The density's original license is retained in licenses/wand125.txt and the Rust project's original license in licenses/jlevy-squares.txt, granting MIT for code and CC BY 4.0 for other project material. Third-party paper archives are not copied.
+ZH: AI 参与数学探索、证明草拟、实现、测试和材料整理；所有结论以完整可复验材料和明确独立性边界为依据。
+EN: AI assisted mathematical exploration, proof drafting, implementation, testing and preparation of materials. Conclusions are supported by complete replayable materials with explicit independence boundaries.
 
-ZH: 原始许可证和第三方代码注释保持原文，避免改变法律文本或固定源码身份；新增说明文档采用逐行中英对应。
-EN: Original licenses and third-party code comments remain verbatim to preserve legal text and fixed source identity; new explanatory documents use paired Chinese and English lines.
+ZH: [旧版 6.70854 Release](https://github.com/Guzhou0806/n40-square-packing/releases/tag/n40-670854-20261010) 和其审查材料保持不变；登记讨论为 [Issue #485](https://github.com/jlevy/squares/issues/485)。
+EN: The [earlier 6.70854 release](https://github.com/Guzhou0806/n40-square-packing/releases/tag/n40-670854-20261010) and its review evidence remain unchanged; registration discussion is [Issue #485](https://github.com/jlevy/squares/issues/485).
+
+ZH: 新增材料使用根目录 MIT 许可；原始许可分别保存在 licenses/wand125.txt、licenses/tokoharu.txt 和 licenses/jlevy-squares.txt。法律文本与冻结源码保持原文，其余新增说明逐行中英对应。
+EN: New materials use the root MIT license. Original licenses are preserved in licenses/wand125.txt, licenses/tokoharu.txt and licenses/jlevy-squares.txt. Legal text and frozen sources remain verbatim; other new explanations use paired Chinese-English lines.
+

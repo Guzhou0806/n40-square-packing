@@ -1,21 +1,22 @@
-# ZH: 四十个单位正方形的严格下界
-# EN: A strict lower bound for forty unit squares
+# ZH: 四十个正方形的连续姿态严格下界
+# EN: A continuous-pose strict lower bound for forty squares
 
-ZH: 对允许独立平移、任意旋转、边界接触且内部两两不交的四十个单位正方形，计算机辅助证明给出以下严格下界。
-EN: For forty unit squares with independent translations, arbitrary rotations, boundary contacts and pairwise disjoint interiors, the computer-assisted proof gives the following strict lower bound.
+ZH: 允许独立平移、任意旋转和所有边界接触，要求方块内部两两不交。计算机辅助证明给出以下精确严格下界。
+EN: Independent translations, arbitrary rotations and all boundary contacts are permitted, with pairwise disjoint square interiors. The computer-assisted proof gives the following exact strict lower bound.
 
 ```math
-s(40)>\frac{335427}{50000}=6.70854.
+s(40)>\frac{1340000}{199529}=6.715815746082023\ldots
 ```
 
-ZH: 证明使用 wand125 的固定矩形密度、401 个有理半正切节点、连续中心域覆盖及一个全局密度上界；不依赖装填接触图、刚性或搜索失败。较简洁的完整内核论证另给出 s(40)>6.70848908。
-EN: The proof uses wand125's fixed rectangle density, 401 rational half-tangent nodes, continuous-center coverage and one global density bound; it does not rely on packing contact graphs, rigidity or failed searches. A simpler full-core argument also gives s(40)>6.70848908.
+ZH: 使用 wand125 的固定矩形密度，直接覆盖边长 199529/200000 方块的连续中心和方向域。总质量为 3999/100，每方块捕获至少 4999/5000，计数矛盾余量为 1/500。
+EN: Using wand125’s fixed rectangle density, verification directly covers the continuous center and orientation domain for squares of side 199529/200000. Total mass is 3999/100, each square captures at least 4999/5000, and the counting-contradiction margin is 1/500.
 
-ZH: 数学论证见 [证明](PROOF.md)，完整执行步骤见 [复现说明](REPRODUCIBILITY.md)，证据范围见 [验证说明](VERIFICATION.md)，署名和许可见 [来源](SOURCES.md)。
-EN: See [proof](PROOF.md) for the mathematics, [reproduction](REPRODUCIBILITY.md) for complete execution, [verification](VERIFICATION.md) for evidence boundaries and [sources](SOURCES.md) for credit and licensing.
+ZH: 完整数学见 [证明](PROOF.md)，操作步骤见 [复现](REPRODUCIBILITY.md)，验证边界见 [证据说明](VERIFICATION.md)，方法归属见 [来源](SOURCES.md)。
+EN: See [proof](PROOF.md) for the mathematics, [reproduction](REPRODUCIBILITY.md) for commands, [verification](VERIFICATION.md) for evidence boundaries and [sources](SOURCES.md) for attribution.
 
-ZH: [运行记录](results/verification.json) 是本版本的验证状态来源。完整运行必须重新检查全部 401 个连续中心域，且通过双算法密度上界、精确转移和拒证测试；内容哈希检查不能代替这些计算。
-EN: The [execution record](results/verification.json) is the verification-status source for this version. A complete run must freshly check all 401 continuous center domains and pass dual-algorithm density bounds, exact transfer and refusal tests; content hashes do not replace these calculations.
+ZH: [结果记录](results/verification.json) 区分作者认证与实际复跑。REPLAYED_SAME_KERNEL 只表示新构建和同一内核完整运行，不代表代码独立、方法独立或形式化认证。
+EN: The [result record](results/verification.json) distinguishes author certification from actual replay. REPLAYED_SAME_KERNEL means a fresh build and complete execution of the same kernel, not code independence, method independence or formal certification.
 
-ZH: 连续节点验证采用 squares 项目的独立 Rust 实现；CODE_DISTINCT_FULL 表示不同实现共享部分数学结构，不表示完整方法独立、形式化证明或人类专家同行评议。现有密度与验证器不属于本项目的原创贡献，也不作当前最佳或首次发表的声明。
-EN: Continuous nodes are checked by the squares project's independently implemented Rust verifier. CODE_DISTINCT_FULL means distinct implementations with some shared mathematical structure, not complete method independence, formal proof or human expert peer review. The existing density and verifier are not original contributions of this project, and no current-best or publication-priority claim is made.
+ZH: 新连续姿态内核仍待外部独立审查。wand125 对此前 6.70854 的审查不覆盖本次新内核或更强数值。本结果不是装填见证、最优性证明或优先权声明。
+EN: The new continuous-pose kernel still awaits external independent review. wand125’s review of the earlier 6.70854 result does not cover this new kernel or stronger value. This is not a packing witness, optimality proof or priority claim.
+

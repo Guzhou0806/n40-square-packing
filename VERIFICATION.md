@@ -1,23 +1,27 @@
-# ZH: 验证范围与证据
-# EN: Verification scope and evidence
+# ZH: 验证范围
+# EN: Verification scope
 
-ZH: 命题为 s(40)>335427/50000。完整验证包含源密度身份、全部 401 个连续中心域、全局密度上界、连续角度转移和严格计数端点，不只检查显示小数。
-EN: The claim is s(40)>335427/50000. Complete verification covers source-density identity, all 401 continuous center domains, a global density bound, continuous-angle transfer and the strict counting endpoint, not merely displayed decimals.
+ZH: 数学结论为 s(40)>1340000/199529。作者侧证明状态是 CERTIFIED，新内核的公开独立审查仍未完成；完整重复运行的标签是 REPLAYED_SAME_KERNEL。
+EN: The mathematical claim is s(40)>1340000/199529. The author-side proof status is CERTIFIED, external independent review of the new kernel remains incomplete, and a complete repeated execution is labeled REPLAYED_SAME_KERNEL.
 
-ZH: results/verification.json 中 PENDING_INDEPENDENT_REPLAY 表示尚无对应完整运行记录；CODE_DISTINCT_FULL 只有在新构建、全量节点、双算法有限界与拒证测试都成功后产生。results/nodes.jsonl 保留每个节点的结果，输入和代码身份绑定至该次运行。
-EN: PENDING_INDEPENDENT_REPLAY in results/verification.json means a corresponding complete execution record is absent. CODE_DISTINCT_FULL is produced only after a fresh build, every node, dual-algorithm finite bounds and refusal tests succeed. results/nodes.jsonl retains each node's result, with input and code identities bound to that execution.
+ZH: 连续内核与研究冻结代码的 SHA-256 为 da06206b8e83a57b8a710ba62e743c6d3a1959e9160ff32ae89ede583841c73c；轴向内核为 f5bc3f60065aaea3d14ffb8465865750fca22cf8bbc6bd8739b5120200b6277d。仅公开执行和验收包装另行组织。
+EN: The continuous kernel retains the research source SHA-256 da06206b8e83a57b8a710ba62e743c6d3a1959e9160ff32ae89ede583841c73c; the axis kernel is f5bc3f60065aaea3d14ffb8465865750fca22cf8bbc6bd8739b5120200b6277d. Only public execution and admission wrappers are reorganized.
 
-ZH: 原研究的非轴覆盖使用 Tokoharu 的 C++ 内核；公开完整复验使用 Joshua Levy 项目的独立 Rust 实现。两者共享矩形测度、角网覆盖、平移截面导数与中心盒分支定界等数学结构，因此属于代码不同而非完整数学方法不同。
-EN: The research non-axis coverage uses Tokoharu's C++ kernel; the public complete replay uses the independently implemented Rust verifier from Joshua Levy's project. They share the rectangle measure, angular covering, translated-section derivatives and center-box branch and bound, so the distinction is in code, not wholly different mathematical methods.
+ZH: 43 个闭角带完整覆盖半正切 [10^-6,83/200]；每带均覆盖全部合法中心。边长 997643/1000000 的完整轴向证书通过严格包含覆盖 [0,10^-6]。不允许将几个方向的成功替代角带穷尽。
+EN: The 43 closed slabs completely cover half-tangents [10^-6,83/200], each over all legal centers. The complete axis certificate at side 997643/1000000 covers [0,10^-6] by strict containment. Success at selected directions cannot substitute for slab exhaustion.
 
-ZH: 401 节点由固定原密度生成新的精确输入声明，不修改 Rust 内核。正权矩形、权重及八重对称质量保持不变；源 JSON 的 201 节点历史元数据不作为新网声明或新成功凭据。
-EN: A new exact input declaration generates 401 nodes from the fixed original density without modifying the Rust kernel. Positive rectangles, weights and eightfold symmetric mass remain unchanged; the source JSON's historical 201-node metadata is neither the new net declaration nor evidence of new success.
+ZH: 研究基准为 61,860,927 个姿态节点、30,930,485 个叶盒、14,096,668 次角度二分，以及 4,897,369 个轴向事件顶点。实际新运行统计由结果记录给出，而非硬编码为成功。
+EN: The research baseline contains 61,860,927 pose nodes, 30,930,485 leaves, 14,096,668 angular bisections and 4,897,369 axial event vertices. Actual fresh-run counts are recorded rather than hardcoded as acceptance.
 
-ZH: 全局密度界分别以区间加法线段树和显式纵向前缀扫描计算，两次展开采用不同 D4 生成方式。坐标和计数使用精确有理数及无界整数；数值显示仅用于阅读。
-EN: The global density bound is computed by a range-add segment tree and an explicit vertical-prefix scan, with different D4 generation methods for the two expansions. Coordinates and counting use exact rationals and unbounded integers; numerical displays are for reading only.
+ZH: 7 组输入与验收测试包括 29 个错误收据变体；160 组独立有理数多边形测试比较 4,014 个姿态及 3,568 项面积。两个 IEEE 近邻方向在 1,000,008 个输入上逐位对照。还有错误舍入、FTZ、危险编译、低预算和合成正反例控制。
+EN: Seven input/admission groups include 29 invalid receipt variants. The 160 independent rational-polygon cases compare 4,014 poses and 3,568 areas; both IEEE-neighbor directions are compared bitwise at 1,000,008 inputs. Controls also cover wrong rounding, FTZ, unsafe compilation, insufficient budgets and synthetic positive/negative cases.
 
-ZH: 反向测试包含错误输入、改变参数、伪造峰值、缺失或重复节点、错误方向网、错误中心域、弱阈值、未决状态及故障注入。人工合成的测试节点仅用于测试拒证逻辑，不属于实际覆盖证据。
-EN: Negative tests include wrong inputs, changed parameters, false peaks, missing or duplicated nodes, a wrong net or center domain, weak thresholds, unresolved status and fault injection. Synthetic test nodes test refusal logic only and are not actual coverage evidence.
+ZH: 有限测试只能发现某些错误，不能代替全域数学证明。可信基础包括所列几何引理、区间核、输入与验收代码、编译器、C++/Python 运行时及 IEEE 硬件语义。
+EN: Finite tests can expose certain defects but do not replace the global mathematical proof. The trust base includes the stated geometric lemmas, interval kernels, input/admission code, compiler, C++/Python runtimes and IEEE hardware semantics.
 
-ZH: 哈希保证的是字节与记录之间的对应，而非数学真理。验证器源代码、所用几何引理、编译器及 IEEE binary64 行为仍属计算证明信任边界。本结果没有形式化证明助手认证，也不宣称人类专家同行评议。
-EN: Hashes establish correspondence between bytes and records, not mathematical truth. Verifier source, geometric lemmas, compilers and IEEE binary64 behavior remain within the computational-proof trust boundary. The result has no formal-assistant certification and claims no human expert peer review.
+ZH: 新内核继承 Tokoharu 的平移导数结构并借鉴 Squares Project 的凹截面方法。不同来源代码的全域复验、方法独立验证、人类专家审查和形式化认证均不作已完成声明。
+EN: The new kernel derives translation-derivative structure from Tokoharu and draws on the Squares Project’s concave-section method. Full distinct-code replay, method-independent verification, human expert review and formal certification are not claimed as completed.
+
+ZH: 此前 Issue #485 中 wand125 对 e5abeb4d 和 6.70854 的肯定审查保持其原始范围，不自动扩展为新命题的审查。V/C/S 登记评级由维护者决定。
+EN: wand125’s positive Issue #485 review of e5abeb4d and 6.70854 retains its original scope and does not automatically review the new claim. Maintainers determine register V/C/S ratings.
+

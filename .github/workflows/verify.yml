@@ -1,6 +1,7 @@
-name: 完整验证 / Full verification
+name: 连续姿态完整复验 / Full continuous-pose replay
 on:
   push:
+    branches: [main]
   workflow_dispatch:
 permissions:
   contents: read
@@ -12,24 +13,19 @@ jobs:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
           persist-credentials: false
-      - name: 目录核查 / Content audit
-        run: python3 -B verifier/release.py --check
-      - name: 工具链 / Toolchain
-        run: rustup toolchain install 1.98.0 --profile minimal
-      - name: 固定依赖 / Pinned dependencies
-        run: python3 -B verifier/prepare.py --runtime "$RUNNER_TEMP/n40-replay"
-      - name: 完整复验 / Complete replay
-        env:
-          RUSTUP_TOOLCHAIN: 1.98.0
-        run: python3 -B verifier/run.py --runtime "$RUNNER_TEMP/n40-replay" --workers 4
-      - name: 归档复核 / Archive audit
-        run: python3 -B verifier/release.py --package --runtime "$RUNNER_TEMP/n40-replay" --out "$RUNNER_TEMP/n40-publication"
-      - name: 验证成果 / Verified artifact
+      - name: 公开目录核查 / Public-tree audit
+        run: python3 -B verifier/audit.py --check
+      - name: 全量连续姿态复验 / Complete continuous-pose replay
+        run: python3 -B verifier/run.py --output "$RUNNER_TEMP/n40-continuous-replay" --workers 4
+      - name: 生成并复核归档 / Build and audit archive
+        run: python3 -B verifier/audit.py --package --runtime "$RUNNER_TEMP/n40-continuous-replay" --output "$RUNNER_TEMP/n40-continuous-public"
+      - name: 已复跑成果包 / Replayed artifact
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: n40-670854-${{ github.sha }}
+          name: n40-continuous-${{ github.sha }}
           path: |
-            ${{ runner.temp }}/n40-publication/n40-670854.zip
-            ${{ runner.temp }}/n40-publication/audit.json
+            ${{ runner.temp }}/n40-continuous-public/n40-continuous-1340000-199529.zip
+            ${{ runner.temp }}/n40-continuous-public/n40-continuous-1340000-199529.zip.sha256
+            ${{ runner.temp }}/n40-continuous-public/audit.json
           retention-days: 30
           if-no-files-found: error

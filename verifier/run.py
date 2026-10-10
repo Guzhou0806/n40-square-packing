@@ -1,97 +1,71 @@
-"""401 个连续中心域的完整复验。
-Complete replay of 401 continuous center domains.
+"""完整连续姿态验证，所有输出隔离于源码。
+Complete continuous-pose verification with outputs isolated from source.
 """
-import argparse
-import datetime
-import hashlib
-import json
-import os
+import argparse,concurrent.futures,datetime,json,os,platform,resource,subprocess,sys,time
 from pathlib import Path
-import platform
-import subprocess
-import sys
-import time
-from finite import PARAMS, PIN, candidate_bytes, finite_check, read_json, require, sha, validate_nodes
-
-ROOT = Path(__file__).resolve().parents[1]
+from exact import *
 
 def main():
-    ap = argparse.ArgumentParser(description='完整复验 / Complete replay')
-    ap.add_argument('--runtime', type=Path, required=True, help='已准备依赖的目录 / Directory with prepared dependencies')
-    ap.add_argument('--workers', type=int, default=4, help='并行数 / Worker count')
-    args = ap.parse_args()
-    require(__debug__ and not os.environ.get('PYTHONOPTIMIZE'), 'ASSERTIONS_DISABLED')
-    require(platform.system() == 'Linux' and 1 <= args.workers <= 16, 'RUNTIME_REQUIREMENTS')
-    for name in ('RUSTFLAGS','CARGO_ENCODED_RUSTFLAGS','CARGO_BUILD_RUSTFLAGS','RUSTC_WRAPPER','RUSTC_WORKSPACE_WRAPPER'):
-        require(not os.environ.get(name), 'UNREVIEWED_COMPILER_FLAGS')
-    runtime = args.runtime.resolve()
-    require(runtime != ROOT and ROOT not in runtime.parents, 'RUNTIME_MUST_BE_OUTSIDE_SOURCE')
-    require((runtime/'vendor').is_dir() and not (runtime/'target').exists(), 'FRESH_PREPARED_RUNTIME_REQUIRED')
-    out = runtime/'replay'
-    out.mkdir(parents=True, exist_ok=False)
-    source_files = sorted(p for folder in ('verifier','tests','certificate') for p in (ROOT/folder).rglob('*')
-                          if p.is_file() and '__pycache__' not in p.parts)
-    source_hashes = {p.relative_to(ROOT).as_posix():sha(p) for p in source_files}
-    started = datetime.datetime.now(datetime.timezone.utc).isoformat()
-    parameters = read_json(ROOT/'certificate/parameters.json')
-    positive, finite = finite_check(ROOT/'certificate/certified_candidate.json', parameters)
-    candidate = out/'candidate-401.json'
-    candidate.write_bytes(candidate_bytes(positive))
-    candidate_digest = sha(candidate)
-    env = os.environ.copy()
-    env.update(PYTHONDONTWRITEBYTECODE='1', CARGO_HOME=str(runtime/'cargo'),
-               CARGO_TARGET_DIR=str(runtime/'target'), CARGO_NET_OFFLINE='true')
-    commands = []
-    def execute(stage, command, cwd=ROOT):
-        begin = time.monotonic()
-        print(stage, flush=True)
-        with (out/(stage+'.stdout')).open('wb') as stdout, (out/(stage+'.stderr')).open('wb') as stderr:
-            process = subprocess.run(command, cwd=cwd, env=env, stdout=stdout, stderr=stderr)
-        commands.append({'stage':stage, 'exit_code':process.returncode, 'seconds':time.monotonic()-begin,
-                         'stdout_sha256':sha(out/(stage+'.stdout')), 'stderr_sha256':sha(out/(stage+'.stderr'))})
-        (out/'stages.json').write_text(json.dumps(commands, indent=2)+'\n')
-        if process.returncode:
-            print((out/(stage+'.stderr')).read_text(errors='replace')[-12000:], file=sys.stderr)
-        require(process.returncode == 0, 'STAGE_FAILED:'+stage)
-    crate = ROOT/'verifier/sqverify_fast'
-    config = ['--config','source.crates-io.replace-with="vendored-sources"',
-              '--config','source.vendored-sources.directory='+json.dumps(str(runtime/'vendor'))]
-    execute('python-tests', [sys.executable,'-B','-m','unittest','discover','-s','tests','-p','test_*.py','-v'])
-    execute('rust-tests', ['cargo','test','--profile','gate-test','--locked','--offline',*config], crate)
-    execute('rust-build', ['cargo','build','--release','--locked','--offline',*config], crate)
-    binary = runtime/'target/release/sqverify-fast'
-    node_dir = out/'nodes'
-    execute('nodes-401', [str(binary),'--candidate',str(candidate),'--n','40','--side','67/10',
-                         '--directions','all','--threshold','10001/10000','--threads',str(args.workers),
-                         '--receipts',str(node_dir),'--confirm'])
-    lines = [json.loads(line) for line in (out/'nodes-401.stdout').read_text().splitlines() if line.strip()]
-    summaries = [z for z in lines if z.get('kind') == 'sqverify-fast-summary/v1']
-    rows = sorted([z for z in lines if 'r' in z], key=lambda z:z['r'])
-    require(len(summaries) == 1, 'SUMMARY_COUNT')
-    summary = summaries[0]
-    validate_nodes(summary, rows, candidate_digest)
-    for row in rows:
-        raw = json.loads((node_dir/('r%03d.json'%row['r'])).read_text())
-        require(raw['certificate_sha256'] == candidate_digest, 'RAW_INPUT_IDENTITY')
-        require({k:v for k,v in raw.items() if k != 'certificate_sha256'} == row, 'RAW_ROW_IDENTITY')
-    require(source_hashes == {p.relative_to(ROOT).as_posix():sha(p) for p in source_files}, 'SOURCE_CHANGED')
-    canonical = out/'nodes.jsonl'
-    canonical.write_text(''.join(json.dumps(z, sort_keys=True, separators=(',',':'))+'\n' for z in rows))
-    result = {'schema':'n40-public-verification/v2','status':'CODE_DISTINCT_FULL',
-              'claim':'s(40) > 335427/50000','parameters':PARAMS,'finite':finite,
-              'continuous_domains':401,'angle_step':'83/80000','threshold':'10001/10000',
-              'source_candidate_sha256':PIN,'derived_candidate_sha256':candidate_digest,
-              'nodes_sha256':sha(canonical),'binary_sha256':sha(binary),
-              'code_and_input_sha256':source_hashes,'commands':commands,
-              'rustc':subprocess.check_output(['rustc','--version'],env=env,text=True).strip(),
-              'python':sys.version.split()[0], 'platform':'Linux',
-              'started_utc':started,'completed_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),
-              'source_commit':os.environ.get('GITHUB_SHA'), 'node_summary':summary,
-              'method_distinct_full':False,'formal_proof':False,'peer_reviewed':False}
-    (out/'verification.json').write_text(json.dumps(result, indent=2)+'\n')
-    print(json.dumps({'status':result['status'],'claim':result['claim'],'continuous_domains':401,
-                      'simple_counting_margin':finite['simple_counting_margin'],
-                      'result_sha256':sha(out/'verification.json')}, indent=2), flush=True)
-
-if __name__ == '__main__':
-    main()
+ ap=argparse.ArgumentParser(description='完整复跑 / Complete replay')
+ ap.add_argument('--output',type=Path,required=True,help='新外部目录 / Fresh external directory')
+ ap.add_argument('--workers',type=int,default=4,help='并行进程数 / Worker processes')
+ a=ap.parse_args();require(__debug__ and not os.environ.get('PYTHONOPTIMIZE'),'PYTHON_OPTIMIZATION')
+ require(platform.system()=='Linux' and platform.machine()=='x86_64','PLATFORM');require(1<=a.workers<=8,'WORKERS')
+ for k in ('CFLAGS','CXXFLAGS','LDFLAGS','LD_PRELOAD','LD_LIBRARY_PATH','PYTHONPATH'):require(not os.environ.get(k),'ENVIRONMENT:'+k)
+ out=a.output.resolve();require(out!=ROOT and ROOT not in out.parents,'EXTERNAL_OUTPUT');out.mkdir(parents=True,exist_ok=False)
+ resource.setrlimit(resource.RLIMIT_CORE,(0,0));env=dict(os.environ,PYTHONDONTWRITEBYTECODE='1')
+ start=time.monotonic();started=datetime.datetime.now(datetime.timezone.utc).isoformat();state={'status':'RUNNING','stages':[]}
+ def execute(name,cmd,cwd=ROOT,expected=(0,),timeout=1800):
+  st=time.monotonic()
+  with (out/(name+'.stdout')).open('wb') as o,(out/(name+'.stderr')).open('wb') as e:p=subprocess.run(cmd,cwd=cwd,env=env,stdout=o,stderr=e,timeout=timeout)
+  state['stages'].append({'stage':name,'exit_code':p.returncode,'seconds':time.monotonic()-st,'stdout_sha256':sha(out/(name+'.stdout')),'stderr_sha256':sha(out/(name+'.stderr'))})
+  save(out/'execution.json',state);require(p.returncode in expected,'FAILED_STAGE:'+name)
+ try:
+  from audit import content,fingerprints
+  content(ROOT);source=fingerprints(ROOT);sc=scalar();pose,axis,admission=make_inputs(ROOT/'certificate/certified_candidate.json')
+  for folder in ('build','pose','slabs','controls'):(out/folder).mkdir()
+  (out/'pose/certificate_input.txt').write_bytes(pose);(out/'axis-input.txt').write_bytes(axis)
+  exe=out/'build/continuous';axe=out/'build/axis';rounding=out/'build/rounding'
+  print('build-and-controls',flush=True)
+  execute('build-pose',['g++',*FLAGS,'verifier/continuous_pose.cpp','-o',str(exe)])
+  execute('build-axis',['g++','-O2','-std=c++17','verifier/axis_integer_grid.cpp','-o',str(axe)])
+  binaries={'pose':sha(exe),'axis':sha(axe)}
+  execute('unit-tests',[sys.executable,'-B','-m','unittest','discover','-s','tests','-p','test_admission.py','-v'])
+  execute('exact-oracle',[sys.executable,'-B','tests/test_kernel.py','--output',str(out/'oracle')])
+  execute('build-rounding',['g++',*FLAGS,'-I','verifier','tests/rounding_harness.cpp','-o',str(rounding)])
+  execute('ieee-neighbors',[str(rounding)])
+  execute('wrong-rounding',[str(rounding),'rounding'],out/'pose',expected=(-6,))
+  execute('ftz',[str(rounding),'ftz'],out/'pose',expected=(-6,))
+  execute('reject-ndebug',['g++','-std=c++17','-DNDEBUG','-c','verifier/continuous_pose.cpp','-o',str(out/'build/rejected.o')],expected=(1,))
+  execute('reject-fastmath',['g++','-std=c++17','-ffast-math','-c','verifier/continuous_pose.cpp','-o',str(out/'build/rejected.o')],expected=(1,))
+  for label,rho,expected in [('positive',Q(2),0),('negative',Q(1,2),3)]:
+   d=out/'controls'/label;d.mkdir();text='\n'.join([enclose(L),enclose(B),'1',' '.join(enclose(v) for v in (0,0,L,L,rho))])+'\n';(d/'certificate_input.txt').write_text(text)
+   execute('synthetic-'+label,[str(exe),'1','415000','1000000','4999','5000','10000'],d,expected=(expected,),timeout=60)
+  execute('limited-budget',[str(exe),'100000','110000','1000000','4999','5000','1'],out/'pose',expected=(3,))
+  require(load(out/'synthetic-negative.stdout')['status']==load(out/'limited-budget.stdout')['status']=='unresolved','UNRESOLVED_CONTROL')
+  print('axis',flush=True);execute('axis',[str(axe),str(out/'axis-input.txt')])
+  axis_rec={'exit_code':0,'input_sha256':AXIS_INPUT,'source_sha256':AXIS,'binary_sha256':binaries['axis'],'stdout':(out/'axis.stdout').read_text(),'stderr_sha256':sha(out/'axis.stderr')}
+  axis_check=admit_axis(axis_rec,binaries['axis']);print('continuous-slabs',flush=True)
+  def slab(item):
+   i,(lo,hi)=item;prefix=out/'slabs'/f'slab-{i:03d}';args=[str(lo),str(hi),'1000000','4999','5000','30000000'];st=time.monotonic();ret=None
+   with prefix.with_suffix('.stdout').open('wb') as o,prefix.with_suffix('.stderr').open('wb') as e:
+    try:ret=subprocess.run([str(exe),*args],cwd=out/'pose',env=env,stdout=o,stderr=e,timeout=1800).returncode
+    except subprocess.TimeoutExpired:pass
+   r={'index':i,'arguments':args,'exit_code':ret,'timed_out':ret is None,'seconds':time.monotonic()-st,'input_sha256':POSE,'source_sha256':KERNEL,'binary_sha256':binaries['pose'],'stdout':prefix.with_suffix('.stdout').read_text(),'stderr_sha256':sha(prefix.with_suffix('.stderr'))}
+   save(prefix.with_suffix('.json'),r);print(f'slab {i+1}/43 exit={ret}',flush=True);return r
+  slabs=list(zip(P['endpoints'],P['endpoints'][1:]))
+  with concurrent.futures.ThreadPoolExecutor(max_workers=a.workers) as pool:rows=list(pool.map(slab,enumerate(slabs)))
+  coverage=admit_slabs(rows,binaries['pose']);require(source==fingerprints(ROOT),'SOURCE_CHANGED')
+  require(binaries=={'pose':sha(exe),'axis':sha(axe)} and sha(out/'pose/certificate_input.txt')==POSE and sha(out/'axis-input.txt')==AXIS_INPUT,'RUNTIME_CHANGED')
+  (out/'slabs.jsonl').write_text(''.join(json.dumps(z,sort_keys=True,separators=(',',':'))+'\n' for z in rows));save(out/'axis.json',axis_rec)
+  r={'schema':'n40-continuous-replay/v1','status':'REPLAYED_SAME_KERNEL','author_claim_status':'CERTIFIED','claim':sc['claim'],
+     'parameters':P,'scalar':sc,'coverage':coverage,'axis':axis_check,'admission':admission,'binaries':binaries,'source_sha256':source,
+     'slabs_sha256':sha(out/'slabs.jsonl'),'axis_sha256':sha(out/'axis.json'),'oracle':load(out/'oracle/oracle.json'),'ieee':load(out/'ieee-neighbors.stdout'),
+     'stages':state['stages'],'compile_flags':FLAGS,'workers':a.workers,'compiler':subprocess.check_output(['g++','--version'],text=True).splitlines()[0],
+     'python':sys.version.split()[0],'platform':'x86_64 Linux','started_utc':started,'completed_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),
+     'seconds':time.monotonic()-start,'source_commit':os.environ.get('GITHUB_SHA'),'external_review_of_new_kernel':False,'code_distinct_full':False,'method_distinct_full':False,'formal_proof':False}
+  save(out/'verification.json',r);state.update(status='COMPLETE',claim=sc['claim'],coverage=coverage,seconds=time.monotonic()-start);save(out/'execution.json',state)
+  print(json.dumps({'status':r['status'],'claim':r['claim'],**coverage,'counting_margin':'1/500'}),flush=True)
+ except BaseException as e:
+  state.update(status='INCOMPLETE',error=type(e).__name__+': '+str(e));save(out/'execution.json',state);raise
+if __name__=='__main__':main()

@@ -1,22 +1,21 @@
-# ZH: 四十个正方形的连续姿态严格下界
-# EN: A continuous-pose strict lower bound for forty squares
-
-ZH: 允许独立平移、任意旋转和所有边界接触，要求方块内部两两不交。计算机辅助证明给出以下精确严格下界。
-EN: Independent translations, arbitrary rotations and all boundary contacts are permitted, with pairwise disjoint square interiors. The computer-assisted proof gives the following exact strict lower bound.
+# ZH: 四十个正方形的严格下界 6.718
+# EN: A strict lower bound of 6.718 for forty squares
 
 ```math
-s(40)>\frac{1340000}{199529}=6.715815746082023\ldots
+s(40)>\frac{3359}{500}=6.718.
 ```
 
-ZH: 使用 wand125 的固定矩形密度，直接覆盖边长 199529/200000 方块的连续中心和方向域。总质量为 3999/100，每方块捕获至少 4999/5000，计数矛盾余量为 1/500。
-EN: Using wand125’s fixed rectangle density, verification directly covers the continuous center and orientation domain for squares of side 199529/200000. Total mass is 3999/100, each square captures at least 4999/5000, and the counting-contradiction margin is 1/500.
+ZH: 允许单位正方形独立平移、任意旋转及所有边界接触，要求内部两两不交。证明使用 685 个正权 D4 矩形轨道；522 个来自 wand125 原候选池，163 个是池外的新几何，全部权重重新认证。
+EN: Unit squares may translate independently, rotate arbitrarily and have any boundary contacts, with pairwise disjoint interiors. The proof uses 685 positive D4 rectangle orbits: 522 from wand125's original pool and 163 new geometries outside it, with all weights certified anew.
 
-ZH: 完整数学见 [证明](PROOF.md)，操作步骤见 [复现](REPRODUCIBILITY.md)，验证边界见 [证据说明](VERIFICATION.md)，方法归属见 [来源](SOURCES.md)。
-EN: See [proof](PROOF.md) for the mathematics, [reproduction](REPRODUCIBILITY.md) for commands, [verification](VERIFICATION.md) for evidence boundaries and [sources](SOURCES.md) for attribution.
+ZH: 精确总质量为 3999/100；每个合法边长 3350/3359 的方块捕获至少 4999/5000。43 个完整三维角带加精确近轴补丁覆盖全部姿态，计数矛盾余量为 1/500。这不是姿态采样，也不是可行装填。
+EN: Total mass is exactly 3999/100, and every legal side-3350/3359 square captures at least 4999/5000. Forty-three complete 3D slabs and an exact near-axis patch cover all poses, with counting contradiction margin 1/500. This is neither pose sampling nor a feasible packing.
 
-ZH: [结果记录](results/verification.json) 区分作者认证与实际复跑。REPLAYED_SAME_KERNEL 只表示新构建和同一内核完整运行，不代表代码独立、方法独立或形式化认证。
-EN: The [result record](results/verification.json) distinguishes author certification from actual replay. REPLAYED_SAME_KERNEL means a fresh build and complete execution of the same kernel, not code independence, method independence or formal certification.
+ZH: [证明](PROOF.md)给出连续几何与严格端点；[复现](REPRODUCIBILITY.md)给出完整执行入口；[验证范围](VERIFICATION.md)区分同内核复跑与独立验证；[来源](SOURCES.md)保留署名及许可。
+EN: [Proof](PROOF.md) gives the continuous geometry and strict endpoint; [reproduction](REPRODUCIBILITY.md) provides complete execution; [verification scope](VERIFICATION.md) distinguishes same-kernel replay from independent verification; [sources](SOURCES.md) retains credit and licensing.
 
-ZH: 新连续姿态内核仍待外部独立审查。wand125 对此前 6.70854 的审查不覆盖本次新内核或更强数值。本结果不是装填见证、最优性证明或优先权声明。
-EN: The new continuous-pose kernel still awaits external independent review. wand125’s review of the earlier 6.70854 result does not cover this new kernel or stronger value. This is not a packing witness, optimality proof or priority claim.
+ZH: 另有独立的[证书族障碍](OBSTRUCTION.md)：原文件全部 2526 个均匀矩形轨道不能在 X≥6.72 形成统一收费矛盾，两套完整精确程序检查相同有限对偶。它不是 s(40) 的上界或 6.72 的下界证明。
+EN: A separate [certificate-family obstruction](OBSTRUCTION.md) excludes uniform charging at X≥6.72 using all 2526 original uniform rectangle orbits, with two complete exact programs checking the same finite dual. It is not an upper bound for s(40) or a lower-bound proof at 6.72.
 
+ZH: 正下界为作者侧计算机辅助证明；实际运行状态见 results/verification.json。REPLAYED_SAME_KERNEL 不代表完整代码独立或形式化验证。wand125 对旧版 6.70854 的审查不覆盖本密度或连续内核；不作最优性或发表优先权声明。
+EN: The positive bound is an author-side computer-assisted proof; actual execution status is in results/verification.json. REPLAYED_SAME_KERNEL does not mean full code-distinct or formal verification. wand125's review of the earlier 6.70854 result does not cover this density or continuous kernel; no optimality or publication-priority claim is made.

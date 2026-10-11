@@ -1,18 +1,18 @@
 # ZH: 完整复验
 # EN: Complete reproduction
 
-ZH: 所需环境为 x86_64 Linux、Python 3.10 或以上的标准库，以及支持 __int128 和 IEEE binary64 的 GCC C++17 编译器。Windows 可使用已有 WSL；无需 Rust、NumPy、求解器或联网获取数学输入。
-EN: Requirements are x86_64 Linux, the Python 3.10+ standard library and a GCC C++17 compiler supporting __int128 and IEEE binary64. Windows may use existing WSL; Rust, NumPy, solvers and network acquisition of mathematical inputs are unnecessary.
+ZH: 正下界需要 x86_64 Linux、Python 3.10+ 标准库、支持 C++17、IEEE binary64 和 __int128 的 GCC。两套完整对偶检查还需要 Boost 头文件，研究版本为 1.83。已有依赖时数学复验完全离线，无需 Rust、NumPy 或优化器。
+EN: The positive bound needs x86_64 Linux, Python 3.10+ standard libraries and GCC supporting C++17, IEEE binary64 and __int128. Both complete dual checks also need Boost headers, version 1.83 in the research execution. Mathematical replay is offline once dependencies exist, without Rust, NumPy or an optimizer.
 
-ZH: 下列检查核对全部文件哈希、配对双语文档、精确输入与已有运行记录，不新执行连续姿态覆盖。
-EN: The following audit checks every file hash, paired bilingual documents, exact inputs and retained execution records, without freshly executing continuous-pose coverage.
+ZH: 内容检查核对精确输入、哈希、文档配对及既有执行记录，不执行新的连续覆盖。
+EN: Content audit checks exact inputs, hashes, paired documents and existing execution records, without freshly executing continuous coverage.
 
 ```sh
 python3 -B verifier/audit.py --check
 ```
 
-ZH: 完整运行要求此前不存在的外部目录；源码及原始证据不覆盖。下列命令重新构建和测试两个冻结内核，执行 43 个完整连续角带、完整轴向证明及精确计数，再生成已复跑归档。
-EN: A complete run requires a new external directory and does not overwrite source or original evidence. These commands rebuild and test both frozen kernels, execute 43 complete continuous slabs, the complete axis proof and exact counting, then produce a replayed archive.
+ZH: 下列完整入口在新外部目录重新生成精确输入、编译两个冻结内核、执行轴向及全部 43 个连续角带，并完成有限几何、IEEE 模式、验收拒证与两套完整支撑族对偶检查。运行目录内保留每个进程的原始输出、错误输出和退出状态。
+EN: The full entry below regenerates exact inputs in a fresh external directory, compiles both frozen kernels, executes the axis and all 43 continuous slabs, and completes finite geometry, IEEE modes, admission refusals and both complete support-family dual checks. Raw stdout, stderr and exit status of every process remain in the runtime directory.
 
 ```sh
 RUNROOT="$(mktemp -d)"
@@ -20,15 +20,19 @@ python3 -B verifier/run.py --output "$RUNROOT/replay" --workers 4
 python3 -B verifier/audit.py --package --runtime "$RUNROOT/replay" --output "$RUNROOT/public"
 ```
 
-ZH: 连续内核固定编译参数为 -O3 -std=c++17 -fno-fast-math -ffp-contract=off，纯整数轴向程序为 -O2 -std=c++17。不得使用 Python 优化模式、NDEBUG、fast-math、FMA contraction、FTZ/DAZ 或非最近舍入；危险环境模式受测试覆盖。
-EN: The continuous kernel uses -O3 -std=c++17 -fno-fast-math -ffp-contract=off, and the integer-only axis program uses -O2 -std=c++17. Python optimized mode, NDEBUG, fast-math, FMA contraction, FTZ/DAZ and non-nearest rounding are forbidden; unsafe environment modes are covered by tests.
+ZH: 每个角带限 30000000 个节点及 1800 秒；任何未决、超时、弱收费或缺失角带都会失败。故意错误的算术模式、编译模式和反例测试必须以指定非零退出码被拒绝，不把所有测试退出码强求为零。
+EN: Every slab has limits of 30000000 nodes and 1800 seconds; unresolved boxes, timeout, weak capture or a missing slab fail. Intentionally invalid arithmetic modes, compiler modes and counterexample controls must be refused with specified nonzero exit codes; not every test subprocess is expected to exit zero.
 
-ZH: 两份大体积文本输入由原始密度重建并核对固定 SHA-256，不重复装入源码。verification.json、slabs.jsonl、axis.json 保留全部数学验收信息；逐带原始数值 stdout、参数、退出码及身份包括在 slabs.jsonl。
-EN: Both larger text inputs are regenerated from the original density and checked against fixed SHA-256 values rather than duplicated in the source. verification.json, slabs.jsonl and axis.json retain mathematical acceptance evidence; slabs.jsonl includes each slab’s original numerical stdout, arguments, exit status and identities.
+ZH: 主几何证据为 verification.json、slabs.jsonl 和 axis.json；独立有限负结果为 obstruction.json。打包只复制源码、精确数据、必要收据与说明，不包含编译产物、缓存或搜索状态。公开包自身再次核查所有哈希及执行身份。
+EN: Primary geometry evidence is verification.json, slabs.jsonl and axis.json; the separately checked finite negative result is obstruction.json. Packaging copies only source, exact data, necessary receipts and explanations, excluding binaries, caches and search states. The public archive is itself rechecked for every hash and execution identity.
 
-ZH: 额外构建日志和编译产物仅在运行目录保留。任何超时、未决盒、缺失角带、错误输入或不足下界都阻断通过；重复执行同一内核不提升独立性等级。
-EN: Additional build logs and binaries remain in the runtime directory only. Timeouts, unresolved boxes, missing slabs, wrong inputs or insufficient lower bounds prevent acceptance; reexecuting the same kernel does not raise its independence level.
+ZH: 单独重跑有限对偶可使用以下命令。两个精确实现均枚举 388×2526 个系数。其成功不代替正下界的三维连续覆盖。
+EN: The finite dual can be rerun separately using the command below. Both exact implementations enumerate 388×2526 coefficients. Their success does not replace 3D continuous coverage for the positive bound.
 
-ZH: GitHub Actions 配置使用相同完整入口。只有成功完成的新运行才能生成正式归档；仅检查已有哈希不是全量验证。
-EN: The GitHub Actions configuration uses the same complete entry point. Only a successful fresh execution can generate the final archive; checking retained hashes is not full verification.
+```sh
+DUALROOT="$(mktemp -d)"
+python3 -B obstruction/run.py --output "$DUALROOT/check"
+```
 
+ZH: 编译参数固定为 -O3 -std=c++17 -fno-fast-math -ffp-contract=off，断言保持启用。Python 优化、fast-math、FTZ/DAZ、非最近舍入和未审查注入环境均不得用于接受。
+EN: Compilation fixes -O3 -std=c++17 -fno-fast-math -ffp-contract=off with assertions enabled. Python optimization, fast-math, FTZ/DAZ, non-nearest rounding and unreviewed injection environments cannot be admitted.

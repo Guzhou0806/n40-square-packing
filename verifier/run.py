@@ -28,7 +28,7 @@ def main():
   exe=out/'build/continuous';axe=out/'build/axis';rounding=out/'build/rounding'
   print('build-and-controls',flush=True)
   execute('build-pose',['g++',*FLAGS,'verifier/continuous_pose.cpp','-o',str(exe)])
-  execute('build-axis',['g++','-O2','-std=c++17','verifier/axis_integer_grid.cpp','-o',str(axe)])
+  execute('build-axis',['g++',*FLAGS,'verifier/axis_integer_grid.cpp','-o',str(axe)])
   binaries={'pose':sha(exe),'axis':sha(axe)}
   execute('unit-tests',[sys.executable,'-B','-m','unittest','discover','-s','tests','-p','test_admission.py','-v'])
   execute('exact-oracle',[sys.executable,'-B','tests/test_kernel.py','--output',str(out/'oracle')])
@@ -64,7 +64,16 @@ def main():
      'stages':state['stages'],'compile_flags':FLAGS,'workers':a.workers,'compiler':subprocess.check_output(['g++','--version'],text=True).splitlines()[0],
      'python':sys.version.split()[0],'platform':'x86_64 Linux','started_utc':started,'completed_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),
      'seconds':time.monotonic()-start,'source_commit':os.environ.get('GITHUB_SHA'),'external_review_of_new_kernel':False,'code_distinct_full':False,'method_distinct_full':False,'formal_proof':False}
-  save(out/'verification.json',r);state.update(status='COMPLETE',claim=sc['claim'],coverage=coverage,seconds=time.monotonic()-start);save(out/'execution.json',state)
+  save(out/'verification.json',r)
+  print('exact-support-family',flush=True)
+  with (out/'obstruction.stdout').open('wb') as so,(out/'obstruction.stderr').open('wb') as se:
+   dual=subprocess.run([sys.executable,'-B','obstruction/run.py','--output',str(out/'dual')],cwd=ROOT,env=env,stdout=so,stderr=se,timeout=1800)
+  require(dual.returncode==0,'DUAL_REPLAY')
+  import shutil
+  shutil.copyfile(out/'dual/obstruction.json',out/'obstruction.json')
+  require(source==fingerprints(ROOT),'SOURCE_CHANGED_AFTER_DUAL')
+  r['full_entry_seconds']=time.monotonic()-start;r['completed_utc']=datetime.datetime.now(datetime.timezone.utc).isoformat();save(out/'verification.json',r)
+  state.update(status='COMPLETE',claim=sc['claim'],coverage=coverage,seconds=time.monotonic()-start);save(out/'execution.json',state)
   print(json.dumps({'status':r['status'],'claim':r['claim'],**coverage,'counting_margin':'1/500'}),flush=True)
  except BaseException as e:
   state.update(status='INCOMPLETE',error=type(e).__name__+': '+str(e));save(out/'execution.json',state);raise

@@ -31,14 +31,17 @@ class Admission(unittest.TestCase):
   for z in tests:
    with self.assertRaises((ValueError,TypeError,KeyError)):admit_slabs(z,h)
   self.assertEqual(len(tests),19)
+ def test_nonfinite_and_nonintegral(self):
+  for value in ('NaN','Infinity','-Infinity'):
+   with self.assertRaises(ValueError):loads('{"x":'+value+'}')
  def test_axis_refusals(self):
-  h='0'*64;r={'status':'AXIS_COVERAGE_PROVED','x_nodes':2213,'y_nodes':2213,'minimum_numerator':str(10**27),'scale':str(10**27),'direct_sum_matches':True,'evaluation_abs_bound':'1'}
+  h='0'*64;r={'status': 'AXIS_COVERAGE_PROVED', 'x_nodes': 3293, 'y_nodes': 3293, 'minimum_numerator': '1001486431423867090847280653', 'scale': '1000000000000000000000000000', 'minimizer_x_integer': 3490012394, 'minimizer_y_integer': 6201340682, 'direct_sum_matches': True, 'evaluation_abs_bound': '627444222088298915573283512797161984'}
   rec={'exit_code':0,'input_sha256':AXIS_INPUT,'source_sha256':AXIS,'binary_sha256':h,'stdout':json.dumps(r)}
-  self.assertEqual(admit_axis(rec,h)['vertices'],2213**2)
+  self.assertEqual(admit_axis(rec,h)['vertices'],3293**2)
   for k,v in [('exit_code',3),('input_sha256','bad'),('source_sha256','bad'),('binary_sha256','bad')]:
    z=copy.deepcopy(rec);z[k]=v
    with self.assertRaises(ValueError):admit_axis(z,h)
-  for k,v in [('status','AXIS_TEST_REFUSED'),('x_nodes',2212),('direct_sum_matches',False),('scale','1'),('minimum_numerator','0'),('evaluation_abs_bound',str(2**126))]:
+  for k,v in [('status','AXIS_TEST_REFUSED'),('x_nodes',3292),('direct_sum_matches',False),('scale','1'),('minimum_numerator','0'),('evaluation_abs_bound',str(2**126))]:
    z=copy.deepcopy(rec);rr=copy.deepcopy(r);rr[k]=v;z['stdout']=json.dumps(rr)
    with self.assertRaises(ValueError):admit_axis(z,h)
 if __name__=='__main__':unittest.main()

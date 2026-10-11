@@ -4,13 +4,14 @@ Public-tree, hash and mathematical-receipt audit.
 from pathlib import Path
 import argparse,json,re,shutil,zipfile
 from exact import *
-DOCS={'README.md','PROOF.md','REPRODUCIBILITY.md','VERIFICATION.md','SOURCES.md'}
+DOCS={'README.md','PROOF.md','REPRODUCIBILITY.md','VERIFICATION.md','SOURCES.md','OBSTRUCTION.md'}
 STATIC=DOCS|{'LICENSE','licenses/wand125.txt','licenses/tokoharu.txt','licenses/jlevy-squares.txt',
- 'certificate/certified_candidate.json','certificate/parameters.json',
+ 'certificate/certified_candidate.json','certificate/original_density.json','certificate/parameters.json',
+ 'obstruction/certificate.json','obstruction/check.py','obstruction/check.cpp','obstruction/run.py',
  'verifier/exact.py','verifier/run.py','verifier/audit.py','verifier/continuous_pose.cpp','verifier/axis_integer_grid.cpp',
  'tests/oracle.py','tests/test_kernel.py','tests/kernel_harness.cpp','tests/rounding_harness.cpp','tests/test_admission.py',
  '.gitattributes','.gitignore','.github/workflows/verify.yml'}
-OUTPUTS={'results/verification.json','results/slabs.jsonl','results/axis.json'}
+OUTPUTS={'results/verification.json','results/slabs.jsonl','results/axis.json','results/obstruction.json'}
 
 def files(root):return sorted(p for p in root.rglob('*') if p.is_file() and '.git' not in p.relative_to(root).parts)
 def fingerprints(root):return {n:sha(root/n) for n in sorted(STATIC)}
@@ -46,7 +47,7 @@ def content(root):
  require(load(root/'certificate/parameters.json')==P,'PARAMETERS')
  require(sha(root/'verifier/continuous_pose.cpp')==KERNEL and sha(root/'verifier/axis_integer_grid.cpp')==AXIS,'KERNEL_IDENTITY')
  _,_,inputs=make_inputs(root/'certificate/certified_candidate.json')
- return {'status':'CONTENT_CHECKED','files':len(present),'bytes':sum(p.stat().st_size for p in files(root)),'bilingual_documents':5,'inputs':inputs}
+ return {'status':'CONTENT_CHECKED','files':len(present),'bytes':sum(p.stat().st_size for p in files(root)),'bilingual_documents':len(DOCS),'inputs':inputs}
 
 def evidence(root):
  r=load(root/'results/verification.json')
@@ -54,6 +55,7 @@ def evidence(root):
  require(r['schema']=='n40-continuous-replay/v1' and r['status']=='REPLAYED_SAME_KERNEL','VERIFICATION_LEVEL')
  require(r['parameters']==P and r['scalar']==scalar() and r['claim']==scalar()['claim'],'THEOREM')
  require(r['source_sha256']==fingerprints(root),'EXECUTED_SOURCE_IDENTITY')
+ require(r['admission']==make_inputs(root/'certificate/certified_candidate.json')[2],'EXECUTED_INPUT_ADMISSION')
  require(r['slabs_sha256']==sha(root/'results/slabs.jsonl') and r['axis_sha256']==sha(root/'results/axis.json'),'EVIDENCE_IDENTITY')
  coverage=admit_slabs([loads(s) for s in (root/'results/slabs.jsonl').read_text().splitlines()],r['binaries']['pose'])
  axis=admit_axis(load(root/'results/axis.json'),r['binaries']['axis'])
@@ -65,7 +67,24 @@ def evidence(root):
  require(o['kernel_sha256']==KERNEL and o['driver_sha256']==sha(root/'tests/test_kernel.py') and o['oracle_sha256']==sha(root/'tests/oracle.py'),'ORACLE_IDENTITY')
  require(r['ieee']=={'status':'PASSED','values':1000008,'seed':4010041010},'IEEE_CONTROL')
  for key in ('external_review_of_new_kernel','code_distinct_full','method_distinct_full','formal_proof'):require(r[key] is False,'OVERCLAIMED_STATUS')
+ check_obstruction(root)
  return {'verification':r['status'],'coverage':coverage,'axis':axis,'counting_margin':'1/500'}
+
+def check_obstruction(root):
+ r=load(root/'results/obstruction.json')
+ require(r['status']=='EXACT_DUAL_CODE_DISTINCT_CHECKED' and r['scope']=='original-2526-uniform-D4-rectangle-orbits','OBSTRUCTION_STATUS')
+ require(r['source_sha256']==ORIGINAL and r['certificate_sha256']==sha(root/'obstruction/certificate.json'),'OBSTRUCTION_INPUT')
+ require(set(r['code_sha256'])=={'obstruction/check.py','obstruction/check.cpp','obstruction/run.py','tests/oracle.py','verifier/exact.py'},'OBSTRUCTION_CODE_SET')
+ for p,h in r['code_sha256'].items():require(sha(root/p)==h,'OBSTRUCTION_CODE')
+ require(r['sites']==2526 and r['poses']==388 and r['coefficients_per_implementation']==980088,'OBSTRUCTION_DOMAIN')
+ require(r['python']['status']=='EXACT_FAMILY_OBSTRUCTION' and r['cpp']['status']=='EXACT_FAMILY_OBSTRUCTION','OBSTRUCTION_VERDICT')
+ for k in ('max_column','max_score_numerator','max_score_denominator','strict_scaled_slack'):
+  require(str(r['python'][k])==str(r['cpp'][k]),'DUAL_DISAGREEMENT')
+ num=int(r['python']['max_score_numerator']);den=int(r['python']['max_score_denominator'])
+ require(den-40*num==int(r['python']['strict_scaled_slack'])>0,'DUAL_STRICTNESS')
+ require((int(r['python']['max_column']),num,den)==(201,24998348431654956215746,1000000000003000000000000),'FROZEN_DUAL_RESULT')
+ require(r['actual_exits']=={'python':0,'build-cpp':0,'cpp':0,'false-dual':2},'DUAL_EXITS')
+ return r
 
 def main():
  ap=argparse.ArgumentParser(description='公开核查或归档 / Audit or archive')
@@ -84,7 +103,7 @@ def main():
   for n in sorted(OUTPUTS):
    dest=target/n;dest.parent.mkdir(parents=True,exist_ok=True);shutil.copyfile(a.runtime/Path(n).name,dest)
   manifest(target);report=content(target);report.update(evidence(target));require(report['verification']=='REPLAYED_SAME_KERNEL','INCOMPLETE_REPLAY')
-  archive=out/'n40-continuous-1340000-199529.zip'
+  archive=out/'n40-6718.zip'
   with zipfile.ZipFile(archive,'w',compression=zipfile.ZIP_DEFLATED,compresslevel=9) as z:
    for p in files(target):
     info=zipfile.ZipInfo('n40-square-packing/'+p.relative_to(target).as_posix(),(2000,1,1,0,0,0));info.compress_type=zipfile.ZIP_DEFLATED;info.external_attr=0o100644<<16;z.writestr(info,p.read_bytes())

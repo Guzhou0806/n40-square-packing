@@ -1,27 +1,23 @@
 # ZH: 验证范围
 # EN: Verification scope
 
-ZH: 数学结论为 s(40)>1340000/199529。作者侧证明状态是 CERTIFIED，新内核的公开独立审查仍未完成；完整重复运行的标签是 REPLAYED_SAME_KERNEL。
-EN: The mathematical claim is s(40)>1340000/199529. The author-side proof status is CERTIFIED, external independent review of the new kernel remains incomplete, and a complete repeated execution is labeled REPLAYED_SAME_KERNEL.
+ZH: 本版本的主结论为 s(40)>3359/500。连续及轴向 C++ 源码与已公开的 1340000/199529 版本逐字节相同；支撑和权重已经改变，所有新输入及全部连续覆盖必须从头重新验证。
+EN: The primary claim is s(40)>3359/500. Continuous and axial C++ sources are byte-identical to the published 1340000/199529 version. Supports and weights have changed, so every new input and all continuous coverage must be verified anew.
 
-ZH: 连续内核与研究冻结代码的 SHA-256 为 da06206b8e83a57b8a710ba62e743c6d3a1959e9160ff32ae89ede583841c73c；轴向内核为 f5bc3f60065aaea3d14ffb8465865750fca22cf8bbc6bd8739b5120200b6277d。仅公开执行和验收包装另行组织。
-EN: The continuous kernel retains the research source SHA-256 da06206b8e83a57b8a710ba62e743c6d3a1959e9160ff32ae89ede583841c73c; the axis kernel is f5bc3f60065aaea3d14ffb8465865750fca22cf8bbc6bd8739b5120200b6277d. Only public execution and admission wrappers are reorganized.
+ZH: 正证明分为非负有理密度、D4 对称归约、随角度变化的合法中心域、全盒包含或排除缓存、凹截面下界、平移导数界、43 个角带的有限穷尽、完整近轴补丁以及严格计数与端点。每部分的完整论证见 PROOF.md。
+EN: The positive proof comprises nonnegative rational density, D4 symmetry, angle-dependent legal centers, whole-box containment/exclusion caching, concave-section lower bounds, translation-derivative bounds, finite exhaustion of 43 slabs, a complete near-axis patch, and strict counting with the endpoint. PROOF.md gives the complete argument for each part.
 
-ZH: 43 个闭角带完整覆盖半正切 [10^-6,83/200]；每带均覆盖全部合法中心。边长 997643/1000000 的完整轴向证书通过严格包含覆盖 [0,10^-6]。不允许将几个方向的成功替代角带穷尽。
-EN: The 43 closed slabs completely cover half-tangents [10^-6,83/200], each over all legal centers. The complete axis certificate at side 997643/1000000 covers [0,10^-6] by strict containment. Success at selected directions cannot substitute for slab exhaustion.
+ZH: 研究阶段两次完整运行各有 60,500,889 个节点、30,250,466 个叶盒和 13,812,428 次角度二分，轴向均枚举 10,843,849 个顶点，非计时输出一致。发布版本另从公开源码完整复跑；实际编译器、代码、输入、二进制和耗时记录在 results 中。
+EN: Two complete research executions each have 60,500,889 nodes, 30,250,466 leaves and 13,812,428 angle bisections, with 10,843,849 axial vertices and matching nontiming outputs. The publication version is additionally replayed completely from its public source; actual compiler, code, input, binary and timing identities are recorded in results.
 
-ZH: 研究基准为 61,860,927 个姿态节点、30,930,485 个叶盒、14,096,668 次角度二分，以及 4,897,369 个轴向事件顶点。实际新运行统计由结果记录给出，而非硬编码为成功。
-EN: The research baseline contains 61,860,927 pose nodes, 30,930,485 leaves, 14,096,668 angular bisections and 4,897,369 axial event vertices. Actual fresh-run counts are recorded rather than hardcoded as acceptance.
+ZH: REPLAYED_SAME_KERNEL 表示实际重建并执行同一几何内核，不是另一套完整独立实现。精确有限多边形对照和八组验收测试仅检测错误，不能把有限测试成功当成整个连续域的证明。
+EN: REPLAYED_SAME_KERNEL means actual rebuilding and execution of the same geometry kernel, not another complete independent implementation. Exact finite-polygon comparisons and eight admission-test groups detect errors only; passing finite tests is not proof over the continuous domain.
 
-ZH: 7 组输入与验收测试包括 29 个错误收据变体；160 组独立有理数多边形测试比较 4,014 个姿态及 3,568 项面积。两个 IEEE 近邻方向在 1,000,008 个输入上逐位对照。还有错误舍入、FTZ、危险编译、低预算和合成正反例控制。
-EN: Seven input/admission groups include 29 invalid receipt variants. The 160 independent rational-polygon cases compare 4,014 poses and 3,568 areas; both IEEE-neighbor directions are compared bitwise at 1,000,008 inputs. Controls also cover wrong rounding, FTZ, unsafe compilation, insufficient budgets and synthetic positive/negative cases.
+ZH: 支撑族负结果由 Python Fraction 和 C++ Boost 任意精度有理数的两套完整程序重新计算。二者的 D4 展开与裁剪实现不同，但共享源矩形、对偶姿态及多边形面积的数学定义。其代码独立性只适用于有限负结果。
+EN: The support-family negative result is recomputed by complete Python Fraction and C++ Boost arbitrary-precision rational programs. Their D4 expansion and clipping implementations differ, while sharing source rectangles, dual poses and the definition of polygon area. Code independence applies only to this finite negative result.
 
-ZH: 有限测试只能发现某些错误，不能代替全域数学证明。可信基础包括所列几何引理、区间核、输入与验收代码、编译器、C++/Python 运行时及 IEEE 硬件语义。
-EN: Finite tests can expose certain defects but do not replace the global mathematical proof. The trust base includes the stated geometric lemmas, interval kernels, input/admission code, compiler, C++/Python runtimes and IEEE hardware semantics.
+ZH: 输入、参数、阈值、完整角带集合、进程退出及生成物哈希分别核验；故意伪造或删减证据会被拒绝。哈希只绑定身份，不证明数学正确；编译器、运行时、IEEE 硬件和明确的几何引理仍属于信任基础。
+EN: Input, parameters, thresholds, complete slab sets, process exits and output hashes are checked separately; deliberately forged or incomplete evidence is refused. Hashes bind identity, not mathematical truth. Compilers, runtimes, IEEE hardware and the explicit geometric lemmas remain within the trust base.
 
-ZH: 新内核继承 Tokoharu 的平移导数结构并借鉴 Squares Project 的凹截面方法。不同来源代码的全域复验、方法独立验证、人类专家审查和形式化认证均不作已完成声明。
-EN: The new kernel derives translation-derivative structure from Tokoharu and draws on the Squares Project’s concave-section method. Full distinct-code replay, method-independent verification, human expert review and formal certification are not claimed as completed.
-
-ZH: 此前 Issue #485 中 wand125 对 e5abeb4d 和 6.70854 的肯定审查保持其原始范围，不自动扩展为新命题的审查。V/C/S 登记评级由维护者决定。
-EN: wand125’s positive Issue #485 review of e5abeb4d and 6.70854 retains its original scope and does not automatically review the new claim. Maintainers determine register V/C/S ratings.
-
+ZH: 6.718 尚无外部独立几何审查、完整方法独立验证或形式化证明。旧版 6.70854 的 wand125 审查保留其原范围。这里的状态不是 jlevy/squares 已授予的 V/C/S 评级，也不表示维护者已接受或最优性已证明。
+EN: The 6.718 result has no external independent geometry review, full method-distinct verification or formal proof. wand125's review of 6.70854 retains its original scope. These statuses are not V/C/S ratings assigned by jlevy/squares and do not mean maintainer acceptance or proved optimality.

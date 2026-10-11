@@ -4,7 +4,7 @@ from fractions import Fraction as Q
 import argparse,hashlib,json,subprocess,sys,time
 ROOT=Path(__file__).resolve().parents[1]
 sys.path.insert(0,str(ROOT/'verifier'))
-from exact import enclose,sha,FLAGS
+from exact import enclose,sha,FLAGS,B
 from oracle import cs, area, capture
 import random,itertools
 
@@ -15,7 +15,7 @@ def main():
  cmd=['g++',*FLAGS,'-I',str(ROOT/'verifier'),str(p),'-o',str(exe)]
  z=subprocess.run(cmd,capture_output=True);assert z.returncode==0,z.stderr
  seed=40004261010;rng=random.Random(seed);cases=[];text=['160']
- L=Q(67,10);B=Q(199529,200000)
+ L=Q(67,10)
  for j in range(160):
   t0=Q(rng.randrange(1,400001),10**6);dt=Q(rng.choice([0,1,10,100,500,2000]),10**6);t1=min(Q(83,200),t0+dt)
   if j<16:t0=Q(1+j,10**6);t1=t0+Q(1,10**6)
